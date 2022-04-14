@@ -187,6 +187,7 @@ class GameViewController: UIViewController {
                 rowsToDrop += [position[0]]
             }
         }
+        rowsToDrop = rowsToDrop.sorted()
         for row in rowsToDrop {
             for position in positions {
                 if position[0] == row {
@@ -269,18 +270,28 @@ class GameViewController: UIViewController {
     
     func checkAllConnection() -> Bool {
         var hasConnection = false
+        var positionsToDelete: [[Int]] = []
         for row in (0..<numberOfItemsInColumn).reversed() {
             for column in 0..<numberOfItemsInRow {
-                hasConnection = checkBothConnection(row: row, column: column)
-                if hasConnection {
-                    return hasConnection
+                let newPositionsToDelete = checkBothConnection(row: row, column: column)
+                if newPositionsToDelete != [[]] {
+                    hasConnection = true
+                    for newPosition in newPositionsToDelete {
+                        if !positionsToDelete.contains(newPosition) {
+                            positionsToDelete += [newPosition]
+                        }
+                    }
                 }
             }
+        }
+        if hasConnection {
+            print(positionsToDelete)
+            dropItems(positions: positionsToDelete)
         }
         return hasConnection
     }
     
-    func checkBothConnection(row: Int, column: Int) -> Bool {
+    func checkBothConnection(row: Int, column: Int) -> [[Int]] {
         var positionsToDelete: [[Int]] = []
         let columnsWithSameItem = getRowConnection(row: row, column: column)
         if columnsWithSameItem.count >= 3 {
@@ -297,10 +308,8 @@ class GameViewController: UIViewController {
                     }
                 }
             }
-            dropItems(positions: positionsToDelete)
             score += Int(10 * bonusFactor) * (positionsToDelete.count-2)
-            return true
-            
+            return positionsToDelete
         }
         
         let rowsWithSameItem = getColumnConnection(row: row, column: column)
@@ -318,12 +327,10 @@ class GameViewController: UIViewController {
                     }
                 }
             }
-            dropItems(positions: positionsToDelete)
             score += Int(10 * bonusFactor) * (positionsToDelete.count-2)
-            return true
+            return positionsToDelete
         }
-        
-        return false
+        return [[]]
     }
     
     func getRowConnection(row: Int, column: Int) -> [Int] {
