@@ -22,6 +22,7 @@ class GameViewController: UIViewController {
     // Timer
     var counter: Double!
     var timer: Timer!
+    var hintCounter: Double = showHintInterval
     
     var isGameOver = false
     
@@ -30,7 +31,6 @@ class GameViewController: UIViewController {
     @IBOutlet weak var boardView: UIView!
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var timerLabel: UILabel!
-    @IBOutlet weak var randomButton: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -39,16 +39,12 @@ class GameViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         // get actual width of board view
         boardWidth = Double(boardView.frame.width)
-        itemSize = Double(boardWidth) / Double(numberOfItemsInRow)
+        itemSize = Double(boardWidth) / Double(numberOfColumnsInRow)
         createBoard()
         restart()
     }
     
-    @IBAction func randomButtonPressed(_ sender: UIButton) {
-        bonusFactor = 1
-        updateItems()
-        checkConnection(movement: Movement(move: .none, row: 0, column: 0))
-    }
+    // MARK: - Game Control
     
     func restart() {
         isGameOver = false
@@ -56,7 +52,7 @@ class GameViewController: UIViewController {
         score = 0
         bonusFactor = 1
         updateItems()
-        checkConnection(movement: Movement(move: .none, row: 0, column: 0))
+        self.checkConnection(movement: Movement(move: .none, row: 0, column: 0))
         // start timer
         if let timer = timer {
             timer.invalidate()
@@ -67,7 +63,7 @@ class GameViewController: UIViewController {
     
     func gameOver() {
         isGameOver = true
-        if randomButton.isEnabled {
+        if boardItems[0][0].imageView.isUserInteractionEnabled {
             performSegue(withIdentifier: "showResult", sender: nil)
         }
     }
@@ -89,12 +85,13 @@ class GameViewController: UIViewController {
                             return
                         }
                         // create movement
+                        hintCounter = showHintInterval
                         if abs(horizontalDisplacement) > abs(verticalDisplacement) {
                             if horizontalDisplacement < 0 && column > 0 {
                                 moveLeft(row, column)
                                 bonusFactor = 1
                                 checkConnection(movement: Movement(move: .left, row: row, column: column))
-                            } else if horizontalDisplacement > 0 && column < numberOfItemsInRow-1 {
+                            } else if horizontalDisplacement > 0 && column < numberOfColumnsInRow-1 {
                                 moveRight(row, column)
                                 bonusFactor = 1
                                 checkConnection(movement: Movement(move: .right, row: row, column: column))
@@ -104,7 +101,7 @@ class GameViewController: UIViewController {
                                 moveUp(row, column)
                                 bonusFactor = 1
                                 checkConnection(movement: Movement(move: .up, row: row, column: column))
-                            } else if verticalDisplacement > 0 && row < numberOfItemsInColumn-1 {
+                            } else if verticalDisplacement > 0 && row < numberOfRowsInColumn-1 {
                                 moveDown(row, column)
                                 bonusFactor = 1
                                 checkConnection(movement: Movement(move: .down, row: row, column: column))
@@ -162,7 +159,7 @@ class GameViewController: UIViewController {
     func dropItem(row: Int, column: Int) {
         var currentItem = boardItems[row][column]
         UIView.animate(withDuration: clearItemAnimateDuration) {
-            currentItem.imageView.transform = CGAffineTransform.identity.scaledBy(x: 0.1 , y: 0.1)
+            currentItem.imageView.transform = CGAffineTransform.identity.scaledBy(x: 0.5 , y: 0.5)
         }
         DispatchQueue.main.asyncAfter(deadline: .now() + clearItemAnimateDuration) {
             UIView.animate(withDuration: dropItemAnimateDuration) {
@@ -199,9 +196,9 @@ class GameViewController: UIViewController {
     
     // MARK: - Create Board
     func createBoard() {
-        for row in 0..<numberOfItemsInColumn {
+        for row in 0..<numberOfRowsInColumn {
             var newRow: [BoardItem] = []
-            for column in 0..<numberOfItemsInRow {
+            for column in 0..<numberOfColumnsInRow {
                 let itemImageView = UIImageView(image: UIImage(named: "item1"))
                 itemImageView.frame = CGRect(x: Double(column) * itemSize, y: Double(row) * itemSize, width: itemSize, height: itemSize)
                 itemImageView.isUserInteractionEnabled = true
@@ -214,27 +211,25 @@ class GameViewController: UIViewController {
     
     // MARK: - Update Item
     func updateItems() {
-        for row in 0..<numberOfItemsInColumn {
-            for column in 0..<numberOfItemsInRow {
+        for row in 0..<numberOfRowsInColumn {
+            for column in 0..<numberOfColumnsInRow {
                 let itemNo = Int.random(in: itemNoRange)
                 boardItems[row][column].itemNo = itemNo
             }
         }
     }
     
-    func unableItemInteraction() {
-        randomButton.isEnabled = false
-        for row in 0..<numberOfItemsInColumn {
-            for column in 0..<numberOfItemsInRow {
+    func disableItemInteraction() {
+        for row in 0..<numberOfRowsInColumn {
+            for column in 0..<numberOfColumnsInRow {
                 boardItems[row][column].imageView.isUserInteractionEnabled = false
             }
         }
     }
     
     func enableItemInteraction() {
-        randomButton.isEnabled = true
-        for row in 0..<numberOfItemsInColumn {
-            for column in 0..<numberOfItemsInRow {
+        for row in 0..<numberOfRowsInColumn {
+            for column in 0..<numberOfColumnsInRow {
                 boardItems[row][column].imageView.isUserInteractionEnabled = true
             }
         }
@@ -243,7 +238,7 @@ class GameViewController: UIViewController {
     // MARK: - Check Connection
     func checkConnection(movement: Movement) {
         var hasConnection = true
-        unableItemInteraction()
+        disableItemInteraction()
         DispatchQueue.main.asyncAfter(deadline: .now() + dropItemAnimateDuration + clearItemAnimateDuration) {
             hasConnection = self.checkAllConnection()
             if hasConnection {
@@ -263,140 +258,186 @@ class GameViewController: UIViewController {
                 self.enableItemInteraction()
                 if self.isGameOver {
                     self.performSegue(withIdentifier: "showResult", sender: nil)
+                } else {
+                    let hint = self.getHint()
+                    if hint == [] {
+                        self.bonusFactor = 1
+                        self.updateItems()
+                        self.checkConnection(movement: Movement(move: .none, row: 0, column: 0))
+                        if let timer = self.timer {
+                            timer.invalidate()
+                        }
+                        self.performSegue(withIdentifier: "showShuffle", sender: nil)
+                    }
                 }
             }
         }
     }
     
     func checkAllConnection() -> Bool {
-        var hasConnection = false
+        var newScore: Int = 0
         var positionsToDelete: [[Int]] = []
-        for row in (0..<numberOfItemsInColumn).reversed() {
-            for column in 0..<numberOfItemsInRow {
-                let newPositionsToDelete = checkBothConnection(row: row, column: column)
-                if newPositionsToDelete != [[]] {
-                    hasConnection = true
-                    for newPosition in newPositionsToDelete {
-                        if !positionsToDelete.contains(newPosition) {
-                            positionsToDelete += [newPosition]
-                        }
+        for row in 0..<numberOfRowsInColumn {
+            for column in 0..<numberOfColumnsInRow {
+                let connectPositions = getConnection(row: row, column: column)
+                var numberOfConnect = 0
+                for position in connectPositions {
+                    if !positionsToDelete.contains(position) {
+                        numberOfConnect += 1
+                        positionsToDelete += [position]
                     }
+                }
+                let connectScore = (numberOfConnect-2) * 10
+                if connectScore > 0 {
+                    newScore += connectScore
                 }
             }
         }
-        if hasConnection {
-            print(positionsToDelete)
+        
+        if positionsToDelete != [] {
+            score += Int(Double(newScore) * bonusFactor)
             dropItems(positions: positionsToDelete)
+            return true
+        } else {
+            return false
         }
-        return hasConnection
     }
     
-    func checkBothConnection(row: Int, column: Int) -> [[Int]] {
+    func getItem(row: Int, column: Int) -> Int {
+        if row >= 0 && row < numberOfRowsInColumn && column >= 0 && column < numberOfColumnsInRow {
+            return boardItems[row][column].itemNo
+        }
+        return 0
+    }
+    
+    func getRowConnection(row: Int, column: Int) -> [[Int]] {
+        let currentItem = boardItems[row][column]
+        var positionsToDelete: [[Int]] = [[row, column]]
+        // check row
+        var toContinue = true
+        var columnToCheck = column
+        while toContinue {
+            columnToCheck += 1
+            let itemNo = getItem(row: row, column: columnToCheck)
+            if itemNo == currentItem.itemNo {
+                positionsToDelete += [[row, columnToCheck]]
+            } else {
+                toContinue = false
+            }
+        }
+        if positionsToDelete.count >= 3 {
+            return positionsToDelete
+        } else {
+            return []
+        }
+    }
+    
+    func getColumnConnection(row: Int, column: Int) -> [[Int]] {
+        let currentItem = boardItems[row][column]
+        var positionsToDelete: [[Int]] = [[row, column]]
+        // check column
+        var toContinue = true
+        var rowToCheck = row
+        while toContinue {
+            rowToCheck += 1
+            let itemNo = getItem(row: rowToCheck, column: column)
+            if itemNo == currentItem.itemNo {
+                positionsToDelete += [[rowToCheck, column]]
+            } else {
+                toContinue = false
+            }
+        }
+        if positionsToDelete.count >= 3 {
+            return positionsToDelete
+        } else {
+            return []
+        }
+    }
+    
+    func getConnection(row: Int, column: Int) -> [[Int]] {
         var positionsToDelete: [[Int]] = []
-        let columnsWithSameItem = getRowConnection(row: row, column: column)
-        if columnsWithSameItem.count >= 3 {
-            for column in columnsWithSameItem {
-                positionsToDelete += [[row, column]]
+        let rowConnection = getRowConnection(row: row, column: column)
+        if rowConnection != [] {
+            positionsToDelete += rowConnection
+            var columnsToCheck: [Int] = []
+            for position in rowConnection {
+                columnsToCheck += [position[1]]
             }
-            for columnToCheck in columnsWithSameItem {
-                let rowsToDelete = getColumnConnection(row: row, column: columnToCheck)
-                if rowsToDelete.count >= 3 {
-                    for row in rowsToDelete {
-                        if !positionsToDelete.contains([row, columnToCheck]) {
-                            positionsToDelete += [[row, columnToCheck]]
-                        }
+            for columnToCheck in columnsToCheck {
+                let columnConnection = getColumnConnection(row: row, column: columnToCheck)
+                for position in columnConnection {
+                    if !positionsToDelete.contains(position) {
+                        positionsToDelete += [position]
                     }
                 }
             }
-            score += Int(10 * bonusFactor) * (positionsToDelete.count-2)
-            return positionsToDelete
-        }
-        
-        let rowsWithSameItem = getColumnConnection(row: row, column: column)
-        if rowsWithSameItem.count >= 3 {
-            for row in rowsWithSameItem {
-                positionsToDelete += [[row, column]]
+        } else {
+            let columnConnection = getColumnConnection(row: row, column: column)
+            if columnConnection != [] {
+                positionsToDelete += columnConnection
             }
-            for rowToCheck in rowsWithSameItem {
-                let columnsToDelete = getRowConnection(row: rowToCheck, column: column)
-                if columnsToDelete.count >= 3 {
-                    for column in columnsToDelete {
-                        if !positionsToDelete.contains([rowToCheck, column]) {
-                            positionsToDelete += [[rowToCheck, column]]
-                        }
-                    }
-                }
-            }
-            score += Int(10 * bonusFactor) * (positionsToDelete.count-2)
-            return positionsToDelete
         }
-        return [[]]
-    }
-    
-    func getRowConnection(row: Int, column: Int) -> [Int] {
-        let currentItem = boardItems[row][column]
-        var columnsWithSameItem = [column]
-        // check left
-        for i in 1..<numberOfItemsInRow {
-            let columnToCheck: Int = (column - i)
-            if columnToCheck >= 0 {
-                let itemToCheck = boardItems[row][columnToCheck]
-                if itemToCheck.itemNo == currentItem.itemNo {
-                    columnsWithSameItem += [columnToCheck]
-                } else { break }
-            } else { break }
-        }
-        // check right
-        for i in 1..<numberOfItemsInRow {
-            let columnToCheck: Int = (column + i)
-            if columnToCheck < numberOfItemsInRow {
-                let itemToCheck = boardItems[row][columnToCheck]
-                if itemToCheck.itemNo == currentItem.itemNo {
-                    columnsWithSameItem += [columnToCheck]
-                } else { break }
-            } else { break }
-        }
-        columnsWithSameItem = columnsWithSameItem.sorted()
-        return columnsWithSameItem
-    }
-    
-    func getColumnConnection(row: Int, column: Int) -> [Int] {
-        let currentItem = boardItems[row][column]
-        var rowsWithSameItem = [row]
-        // check top
-        for i in 1..<numberOfItemsInColumn {
-            let rowToCheck: Int = (row - i)
-            if rowToCheck >= 0 {
-                let itemToCheck = boardItems[rowToCheck][column]
-                if itemToCheck.itemNo == currentItem.itemNo {
-                    rowsWithSameItem += [rowToCheck]
-                } else { break }
-            } else { break }
-        }
-        // check bottom
-        for i in 1..<numberOfItemsInColumn {
-            let rowToCheck: Int = (row + i)
-            if rowToCheck < numberOfItemsInColumn {
-                let itemToCheck = boardItems[rowToCheck][column]
-                if itemToCheck.itemNo == currentItem.itemNo {
-                    rowsWithSameItem += [rowToCheck]
-                } else { break }
-            } else { break }
-        }
-        rowsWithSameItem = rowsWithSameItem.sorted()
-        return rowsWithSameItem
-        
+        return positionsToDelete
     }
     
     // MARK: - Hint
-//    func getHint() {
-//        for row in 0..<numberOfItemsInColumn {
-//            for column in 0..<numberOfItemsInRow {
-//                let currentItem = boardItems[row][column]
-//
-//            }
-//        }
-//    }
+    func getHint() -> [[Int]]{
+        for row in 0..<numberOfRowsInColumn {
+            for column in 0..<numberOfColumnsInRow {
+                let currentItemNo = boardItems[row][column].itemNo
+                // check row
+                let columnToCheck = column + 1
+                if columnToCheck < numberOfColumnsInRow {
+                    let itemNo = boardItems[row][columnToCheck].itemNo
+                    if itemNo == currentItemNo {
+                        if getItem(row: row-1, column: column-1) == itemNo {
+                            return [[row, column-1], [row-1, column-1]]
+                        }
+                        if getItem(row: row+1, column: column-1) == itemNo {
+                            return [[row, column-1], [row+1, column-1]]
+                        }
+                        if getItem(row: row-1, column: columnToCheck+1) == itemNo {
+                            return [[row, columnToCheck+1], [row-1, columnToCheck+1]]
+                        }
+                        if getItem(row: row+1, column: columnToCheck+1) == itemNo {
+                            return [[row, columnToCheck+1], [row+1, columnToCheck+1]]
+                        }
+                    }
+                }
+                // check column
+                let rowToCheck = row + 1
+                if rowToCheck < numberOfRowsInColumn {
+                    let itemNo = boardItems[rowToCheck][column].itemNo
+                    if itemNo == currentItemNo {
+                        if getItem(row: row-1, column: column-1) == itemNo {
+                            return [[row-1, column], [row-1, column-1]]
+                        }
+                        if getItem(row: row-1, column: column+1) == itemNo {
+                            return [[row-1, column], [row-1, column+1]]
+                        }
+                        if getItem(row: rowToCheck+1, column: column-1) == itemNo {
+                            return [[rowToCheck+1, column], [rowToCheck+1, column-1]]
+                        }
+                        if getItem(row: rowToCheck+1, column: column+1) == itemNo {
+                            return [[rowToCheck+1, column], [rowToCheck+1, column+1]]
+                        }
+                    }
+                }
+            }
+        }
+        return []
+    }
+    
+    func showHint(imageView: UIImageView) {
+        UIView.animate(withDuration: 0.5) {
+            imageView.alpha = 0.5
+            imageView.transform =  CGAffineTransform.identity.scaledBy(x: 0.4 , y: 0.4)
+        }
+        UIView.animate(withDuration: 0.5) {
+            imageView.alpha = 1
+            imageView.transform =  CGAffineTransform.identity.scaledBy(x: 1 , y: 1)
+        }
+    }
 
     
     // MARK: - Timer
@@ -408,6 +449,15 @@ class GameViewController: UIViewController {
             gameOver()
         } else {
             counter -= 0.1
+            hintCounter -= 0.1
+            if hintCounter <= 0 {
+                let hint = getHint()
+                for position in hint {
+                    let imageView = self.boardItems[position[0]][position[1]].imageView
+                    showHint(imageView: imageView)
+                    hintCounter = 1
+                }
+            }
         }
     }
     
@@ -416,8 +466,19 @@ class GameViewController: UIViewController {
         return ResultViewController(coder: coder, score: score)
     }
     
-    @IBAction func unwindToGameViewController(_ segue: UIStoryboardSegue) {
+    @IBAction func unwindAndRestart(_ segue: UIStoryboardSegue) {
         restart()
     }
+    
+    @IBSegueAction func showShuffle(_ coder: NSCoder) -> ShuffleViewController? {
+        return ShuffleViewController(coder: coder)
+    }
+    
+    @IBAction func unwindAndShuffle(_ segue: UIStoryboardSegue) {
+        // start timer
+        timer.invalidate()
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
+    }
+    
 }
 

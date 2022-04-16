@@ -18,6 +18,8 @@
 		C226E076280414BF00F9B3EA /* Mali-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C226E074280414BF00F9B3EA /* Mali-Medium.ttf */; };
 		C226E077280414BF00F9B3EA /* Mali-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C226E075280414BF00F9B3EA /* Mali-Regular.ttf */; };
 		C226E0792807FD2000F9B3EA /* ResultViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C226E0782807FD2000F9B3EA /* ResultViewController.swift */; };
+		C226E07C280A8ECA00F9B3EA /* ShuffleViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = C226E07B280A8ECA00F9B3EA /* ShuffleViewController.swift */; };
+		C226E07E280A9FA600F9B3EA /* Movement.swift in Sources */ = {isa = PBXBuildFile; fileRef = C226E07D280A9FA600F9B3EA /* Movement.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -34,6 +36,8 @@
 		C226E074280414BF00F9B3EA /* Mali-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mali-Medium.ttf"; sourceTree = "<group>"; };
 		C226E075280414BF00F9B3EA /* Mali-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Mali-Regular.ttf"; sourceTree = "<group>"; };
 		C226E0782807FD2000F9B3EA /* ResultViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResultViewController.swift; sourceTree = "<group>"; };
+		C226E07B280A8ECA00F9B3EA /* ShuffleViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShuffleViewController.swift; sourceTree = "<group>"; };
+		C226E07D280A9FA600F9B3EA /* Movement.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Movement.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +88,7 @@
 			children = (
 				C226E06F2801999700F9B3EA /* BoardItem.swift */,
 				C226E07128039EE100F9B3EA /* Constants.swift */,
+				C226E07D280A9FA600F9B3EA /* Movement.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -102,6 +107,7 @@
 			children = (
 				C226E05E280190CD00F9B3EA /* GameViewController.swift */,
 				C226E0782807FD2000F9B3EA /* ResultViewController.swift */,
+				C226E07B280A8ECA00F9B3EA /* ShuffleViewController.swift */,
 			);
 			path = Controller;
 			sourceTree = "<group>";
@@ -181,7 +187,9 @@
 			files = (
 				C226E07228039EE100F9B3EA /* Constants.swift in Sources */,
 				C226E05F280190CD00F9B3EA /* GameViewController.swift in Sources */,
+				C226E07C280A8ECA00F9B3EA /* ShuffleViewController.swift in Sources */,
 				C226E05B280190CD00F9B3EA /* AppDelegate.swift in Sources */,
+				C226E07E280A9FA600F9B3EA /* Movement.swift in Sources */,
 				C226E0702801999700F9B3EA /* BoardItem.swift in Sources */,
 				C226E05D280190CD00F9B3EA /* SceneDelegate.swift in Sources */,
 				C226E0792807FD2000F9B3EA /* ResultViewController.swift in Sources */,

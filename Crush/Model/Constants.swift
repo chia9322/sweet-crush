@@ -5,11 +5,10 @@
 //  Created by Chia on 2022/04/11.
 //
 
-import Foundation
 import UIKit
 
-let numberOfItemsInColumn = 8
-let numberOfItemsInRow = 6
+let numberOfRowsInColumn = 9
+let numberOfColumnsInRow = 6
 
 let itemNoRange = 1...6
 
@@ -20,17 +19,6 @@ let clearItemAnimateDuration = 0.1
 let minimumDistanceToSwitchItem: CGFloat = 0
 
 let bonusFactorInterval: Double = 0.5
+let showHintInterval: Double = 3
 
 let playTime: Double = 30
-
-
-enum Move {
-    case left, right, up, down, none
-}
-
-
-struct Movement {
-    var move: Move
-    let row: Int
-    let column: Int
-}
