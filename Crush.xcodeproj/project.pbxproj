@@ -70,9 +70,9 @@
 		C226E059280190CD00F9B3EA /* Crush */ = {
 			isa = PBXGroup;
 			children = (
-				C226E073280414BF00F9B3EA /* Fonts */,
-				C226E06E2801998900F9B3EA /* Model */,
-				C226E07A2808395200F9B3EA /* Controller */,
+				C226E073280414BF00F9B3EA /* font */,
+				C226E06E2801998900F9B3EA /* model */,
+				C226E07A2808395200F9B3EA /* controller */,
 				C226E05A280190CD00F9B3EA /* AppDelegate.swift */,
 				C226E05C280190CD00F9B3EA /* SceneDelegate.swift */,
 				C226E060280190CD00F9B3EA /* Main.storyboard */,
@@ -83,33 +83,33 @@
 			path = Crush;
 			sourceTree = "<group>";
 		};
-		C226E06E2801998900F9B3EA /* Model */ = {
+		C226E06E2801998900F9B3EA /* model */ = {
 			isa = PBXGroup;
 			children = (
 				C226E06F2801999700F9B3EA /* BoardItem.swift */,
 				C226E07128039EE100F9B3EA /* Constants.swift */,
 				C226E07D280A9FA600F9B3EA /* Movement.swift */,
 			);
-			path = Model;
+			path = model;
 			sourceTree = "<group>";
 		};
-		C226E073280414BF00F9B3EA /* Fonts */ = {
+		C226E073280414BF00F9B3EA /* font */ = {
 			isa = PBXGroup;
 			children = (
 				C226E074280414BF00F9B3EA /* Mali-Medium.ttf */,
 				C226E075280414BF00F9B3EA /* Mali-Regular.ttf */,
 			);
-			path = Fonts;
+			path = font;
 			sourceTree = "<group>";
 		};
-		C226E07A2808395200F9B3EA /* Controller */ = {
+		C226E07A2808395200F9B3EA /* controller */ = {
 			isa = PBXGroup;
 			children = (
 				C226E05E280190CD00F9B3EA /* GameViewController.swift */,
 				C226E0782807FD2000F9B3EA /* ResultViewController.swift */,
 				C226E07B280A8ECA00F9B3EA /* ShuffleViewController.swift */,
 			);
-			path = Controller;
+			path = controller;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

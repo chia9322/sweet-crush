@@ -210,7 +210,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="fbZ-bR-gda" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="s6S-82-9UB" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="791.304347826087" y="80.357142857142847"/>
+            <point key="canvasLocation" x="809" y="80"/>
         </scene>
         <!--Shuffle View Controller-->
         <scene sceneID="aEP-YO-yZQ">
@@ -283,7 +283,7 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="W6N-fr-1kL" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
                 <exit id="E63-CB-brC" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="791" y="811"/>
+            <point key="canvasLocation" x="1578" y="80"/>
         </scene>
     </scenes>
     <resources>

@@ -8,8 +8,6 @@
 import UIKit
 
 class GameViewController: UIViewController {
-    
-    var boardWidth: Double = 0
     var itemSize: Double = 0
     var score: Int = 0 {
         didSet {
@@ -27,6 +25,7 @@ class GameViewController: UIViewController {
     var isGameOver = false
     
     let feedbackGenerator = UISelectionFeedbackGenerator()
+    var oldLocation: CGPoint = CGPoint(x: 0, y: 0)
 
     @IBOutlet weak var boardView: UIView!
     @IBOutlet weak var scoreLabel: UILabel!
@@ -38,14 +37,13 @@ class GameViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         // get actual width of board view
-        boardWidth = Double(boardView.frame.width)
-        itemSize = Double(boardWidth) / Double(numberOfColumnsInRow)
+        let boardWidth = Double(boardView.frame.width)
+        itemSize = Double(boardWidth) / Double(numberOfColumns)
         createBoard()
         restart()
     }
     
     // MARK: - Game Control
-    
     func restart() {
         isGameOver = false
         enableItemInteraction()
@@ -53,12 +51,9 @@ class GameViewController: UIViewController {
         bonusFactor = 1
         updateItems()
         self.checkConnection(movement: Movement(move: .none, row: 0, column: 0))
-        // start timer
-        if let timer = timer {
-            timer.invalidate()
-        }
+        // timer
         counter = playTime
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
+        startTimer()
     }
     
     func gameOver() {
@@ -69,43 +64,42 @@ class GameViewController: UIViewController {
     }
     
     // MARK: - Switch Item
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        guard let touch = touches.first else { return }
+        oldLocation = touch.location(in: self.boardView)
+    }
+    
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
-        guard let view = touch.view else { return }
-        if let view = view as? UIImageView {
-            for (row, boardItemsRow) in boardItems.enumerated() {
-                for (column, currentItem) in boardItemsRow.enumerated() {
-                    if currentItem.imageView == view {
-                        let oldLocation = touch.previousLocation(in: self.view)
-                        let newLocation = touch.location(in: self.view)
-                        let horizontalDisplacement = newLocation.x - oldLocation.x
-                        let verticalDisplacement = newLocation.y - oldLocation.y
-                        // touch without movement
-                        if abs(horizontalDisplacement) <= minimumDistanceToSwitchItem && abs(verticalDisplacement) <= minimumDistanceToSwitchItem {
-                            return
+        // check if view is imageView of board item and get row & column no.
+        for (row, boardItemsRow) in boardItems.enumerated() {
+            for (column, currentItem) in boardItemsRow.enumerated() {
+                if currentItem.imageView == touch.view {
+                    let newLocation = touch.location(in: self.boardView)
+                    let horizontalDisplacement = newLocation.x - oldLocation.x
+                    let verticalDisplacement = newLocation.y - oldLocation.y
+                    // reset hint counter
+                    hintCounter = showHintInterval
+                    // create movement
+                    if abs(horizontalDisplacement) > abs(verticalDisplacement) {
+                        if horizontalDisplacement < 0 && column > 0 {
+                            moveLeft(row, column)
+                            bonusFactor = 1
+                            checkConnection(movement: Movement(move: .left, row: row, column: column))
+                        } else if horizontalDisplacement > 0 && column < numberOfColumns-1 {
+                            moveRight(row, column)
+                            bonusFactor = 1
+                            checkConnection(movement: Movement(move: .right, row: row, column: column))
                         }
-                        // create movement
-                        hintCounter = showHintInterval
-                        if abs(horizontalDisplacement) > abs(verticalDisplacement) {
-                            if horizontalDisplacement < 0 && column > 0 {
-                                moveLeft(row, column)
-                                bonusFactor = 1
-                                checkConnection(movement: Movement(move: .left, row: row, column: column))
-                            } else if horizontalDisplacement > 0 && column < numberOfColumnsInRow-1 {
-                                moveRight(row, column)
-                                bonusFactor = 1
-                                checkConnection(movement: Movement(move: .right, row: row, column: column))
-                            }
-                        } else {
-                            if verticalDisplacement < 0 && row > 0 {
-                                moveUp(row, column)
-                                bonusFactor = 1
-                                checkConnection(movement: Movement(move: .up, row: row, column: column))
-                            } else if verticalDisplacement > 0 && row < numberOfRowsInColumn-1 {
-                                moveDown(row, column)
-                                bonusFactor = 1
-                                checkConnection(movement: Movement(move: .down, row: row, column: column))
-                            }
+                    } else {
+                        if verticalDisplacement < 0 && row > 0 {
+                            moveUp(row, column)
+                            bonusFactor = 1
+                            checkConnection(movement: Movement(move: .up, row: row, column: column))
+                        } else if verticalDisplacement > 0 && row < numberOfRows-1 {
+                            moveDown(row, column)
+                            bonusFactor = 1
+                            checkConnection(movement: Movement(move: .down, row: row, column: column))
                         }
                     }
                 }
@@ -117,42 +111,42 @@ class GameViewController: UIViewController {
     func moveLeft(_ row: Int, _ column: Int) {
         let currentItem = boardItems[row][column]
         let leftItem = boardItems[row][column-1]
+        boardItems[row][column] = leftItem
+        boardItems[row][column-1] = currentItem
         UIView.animate(withDuration: changeItemAnimateDuration) {
             currentItem.imageView.frame.origin.x -= self.itemSize
             leftItem.imageView.frame.origin.x += self.itemSize
         }
-        boardItems[row][column] = leftItem
-        boardItems[row][column-1] = currentItem
     }
     func moveRight(_ row: Int, _ column: Int) {
         let currentItem = boardItems[row][column]
         let rightItem = boardItems[row][column+1]
+        boardItems[row][column] = rightItem
+        boardItems[row][column+1] = currentItem
         UIView.animate(withDuration: changeItemAnimateDuration) {
             currentItem.imageView.frame.origin.x += self.itemSize
             rightItem.imageView.frame.origin.x -= self.itemSize
         }
-        boardItems[row][column] = rightItem
-        boardItems[row][column+1] = currentItem
     }
     func moveUp(_ row: Int, _ column: Int) {
         let currentItem = boardItems[row][column]
         let topItem = boardItems[row-1][column]
+        boardItems[row][column] = topItem
+        boardItems[row-1][column] = currentItem
         UIView.animate(withDuration: changeItemAnimateDuration) {
             currentItem.imageView.frame.origin.y -= self.itemSize
             topItem.imageView.frame.origin.y += self.itemSize
         }
-        boardItems[row][column] = topItem
-        boardItems[row-1][column] = currentItem
     }
     func moveDown(_ row: Int, _ column: Int) {
         let currentItem = boardItems[row][column]
         let bottomItem = boardItems[row+1][column]
+        boardItems[row][column] = bottomItem
+        boardItems[row+1][column] = currentItem
         UIView.animate(withDuration: changeItemAnimateDuration) {
             currentItem.imageView.frame.origin.y += self.itemSize
             bottomItem.imageView.frame.origin.y -= self.itemSize
         }
-        boardItems[row][column] = bottomItem
-        boardItems[row+1][column] = currentItem
     }
     
     // MARK: - Drop Item
@@ -196,12 +190,11 @@ class GameViewController: UIViewController {
     
     // MARK: - Create Board
     func createBoard() {
-        for row in 0..<numberOfRowsInColumn {
+        for row in 0..<numberOfRows {
             var newRow: [BoardItem] = []
-            for column in 0..<numberOfColumnsInRow {
+            for column in 0..<numberOfColumns {
                 let itemImageView = UIImageView(image: UIImage(named: "item1"))
                 itemImageView.frame = CGRect(x: Double(column) * itemSize, y: Double(row) * itemSize, width: itemSize, height: itemSize)
-                itemImageView.isUserInteractionEnabled = true
                 boardView.addSubview(itemImageView)
                 newRow += [BoardItem(itemNo: 1, imageView: itemImageView)]
             }
@@ -211,8 +204,8 @@ class GameViewController: UIViewController {
     
     // MARK: - Update Item
     func updateItems() {
-        for row in 0..<numberOfRowsInColumn {
-            for column in 0..<numberOfColumnsInRow {
+        for row in 0..<numberOfRows {
+            for column in 0..<numberOfColumns {
                 let itemNo = Int.random(in: itemNoRange)
                 boardItems[row][column].itemNo = itemNo
             }
@@ -220,17 +213,19 @@ class GameViewController: UIViewController {
     }
     
     func disableItemInteraction() {
-        for row in 0..<numberOfRowsInColumn {
-            for column in 0..<numberOfColumnsInRow {
-                boardItems[row][column].imageView.isUserInteractionEnabled = false
+        for row in 0..<numberOfRows {
+            for column in 0..<numberOfColumns {
+                boardItems[row][column]
+                    .imageView.isUserInteractionEnabled = false
             }
         }
     }
-    
+
     func enableItemInteraction() {
-        for row in 0..<numberOfRowsInColumn {
-            for column in 0..<numberOfColumnsInRow {
-                boardItems[row][column].imageView.isUserInteractionEnabled = true
+        for row in 0..<numberOfRows {
+            for column in 0..<numberOfColumns {
+                boardItems[row][column]
+                    .imageView.isUserInteractionEnabled = true
             }
         }
     }
@@ -248,6 +243,7 @@ class GameViewController: UIViewController {
                 newMovement.move = .none
                 self.checkConnection(movement: newMovement)
             } else {
+                // if there's no connection, return the item to its original position
                 switch movement.move {
                 case .none: break
                 case .left: self.moveLeft(movement.row, movement.column)
@@ -264,9 +260,7 @@ class GameViewController: UIViewController {
                         self.bonusFactor = 1
                         self.updateItems()
                         self.checkConnection(movement: Movement(move: .none, row: 0, column: 0))
-                        if let timer = self.timer {
-                            timer.invalidate()
-                        }
+                        self.stopTimer()
                         self.performSegue(withIdentifier: "showShuffle", sender: nil)
                     }
                 }
@@ -277,8 +271,8 @@ class GameViewController: UIViewController {
     func checkAllConnection() -> Bool {
         var newScore: Int = 0
         var positionsToDelete: [[Int]] = []
-        for row in 0..<numberOfRowsInColumn {
-            for column in 0..<numberOfColumnsInRow {
+        for row in 0..<numberOfRows {
+            for column in 0..<numberOfColumns {
                 let connectPositions = getConnection(row: row, column: column)
                 var numberOfConnect = 0
                 for position in connectPositions {
@@ -304,7 +298,7 @@ class GameViewController: UIViewController {
     }
     
     func getItem(row: Int, column: Int) -> Int {
-        if row >= 0 && row < numberOfRowsInColumn && column >= 0 && column < numberOfColumnsInRow {
+        if row >= 0 && row < numberOfRows && column >= 0 && column < numberOfColumns {
             return boardItems[row][column].itemNo
         }
         return 0
@@ -382,12 +376,12 @@ class GameViewController: UIViewController {
     
     // MARK: - Hint
     func getHint() -> [[Int]]{
-        for row in 0..<numberOfRowsInColumn {
-            for column in 0..<numberOfColumnsInRow {
+        for row in 0..<numberOfRows {
+            for column in 0..<numberOfColumns {
                 let currentItemNo = boardItems[row][column].itemNo
                 // check row
                 let columnToCheck = column + 1
-                if columnToCheck < numberOfColumnsInRow {
+                if columnToCheck < numberOfColumns {
                     let itemNo = boardItems[row][columnToCheck].itemNo
                     if itemNo == currentItemNo {
                         if getItem(row: row-1, column: column-1) == itemNo {
@@ -406,7 +400,7 @@ class GameViewController: UIViewController {
                 }
                 // check column
                 let rowToCheck = row + 1
-                if rowToCheck < numberOfRowsInColumn {
+                if rowToCheck < numberOfRows {
                     let itemNo = boardItems[rowToCheck][column].itemNo
                     if itemNo == currentItemNo {
                         if getItem(row: row-1, column: column-1) == itemNo {
@@ -461,6 +455,19 @@ class GameViewController: UIViewController {
         }
     }
     
+    func startTimer() {
+        if let timer = timer {
+            timer.invalidate()
+        }
+        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
+    }
+    
+    func stopTimer() {
+        if let timer = timer {
+            timer.invalidate()
+        }
+    }
+    
     // MARK: - Segue
     @IBSegueAction func showResult(_ coder: NSCoder) -> ResultViewController? {
         return ResultViewController(coder: coder, score: score)
@@ -475,9 +482,7 @@ class GameViewController: UIViewController {
     }
     
     @IBAction func unwindAndShuffle(_ segue: UIStoryboardSegue) {
-        // start timer
-        timer.invalidate()
-        timer = Timer.scheduledTimer(timeInterval: 0.1, target: self, selector: #selector(updateCounter), userInfo: nil, repeats: true)
+        startTimer()
     }
     
 }
