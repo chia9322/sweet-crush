@@ -45,7 +45,7 @@
                                 </constraints>
                             </view>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Sweet Crush" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="RxF-KC-3nW">
-                                <rect key="frame" x="78" y="59" width="258.5" height="52.5"/>
+                                <rect key="frame" x="67.5" y="59" width="279.5" height="58.5"/>
                                 <fontDescription key="fontDescription" name="Mali-Medium" family="Mali" pointSize="45"/>
                                 <color key="textColor" name="peachColor"/>
                                 <nil key="highlightedColor"/>
@@ -73,7 +73,7 @@
                                 </userDefinedRuntimeAttributes>
                             </label>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="30.1s" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="rsx-pp-11p">
-                                <rect key="frame" x="20" y="196.5" width="80" height="29.5"/>
+                                <rect key="frame" x="20" y="193.5" width="80" height="32.5"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="80" id="sku-Ss-ynV"/>
@@ -133,23 +133,23 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nkg-8k-X3D">
-                                <rect key="frame" x="40" y="318" width="334" height="260.5"/>
+                                <rect key="frame" x="40" y="310" width="334" height="276.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="EAU-Wg-smh">
-                                        <rect key="frame" x="46.5" y="20" width="241.5" height="220.5"/>
+                                        <rect key="frame" x="36" y="20" width="262.5" height="236.5"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="iAc-j2-GIT">
-                                                <rect key="frame" x="0.0" y="0.0" width="241.5" height="82"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="262.5" height="91"/>
                                                 <subviews>
                                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Your Score" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="pEg-AM-iGa">
-                                                        <rect key="frame" x="0.0" y="0.0" width="241.5" height="41"/>
+                                                        <rect key="frame" x="0.0" y="0.0" width="262.5" height="45.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Mali-Medium" family="Mali" pointSize="35"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1800" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="X4q-7C-AYo">
-                                                        <rect key="frame" x="0.0" y="41" width="241.5" height="41"/>
+                                                        <rect key="frame" x="0.0" y="45.5" width="262.5" height="45.5"/>
                                                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                         <fontDescription key="fontDescription" name="Mali-Medium" family="Mali" pointSize="35"/>
                                                         <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -158,14 +158,14 @@
                                                 </subviews>
                                             </stackView>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Highest Score: 15680" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="yEB-Xa-zF6">
-                                                <rect key="frame" x="0.0" y="112" width="241.5" height="29.5"/>
+                                                <rect key="frame" x="0.0" y="121" width="262.5" height="32.5"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Mali-Medium" family="Mali" pointSize="25"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yWI-7R-aJg">
-                                                <rect key="frame" x="0.0" y="171.5" width="241.5" height="49"/>
+                                                <rect key="frame" x="0.0" y="183.5" width="262.5" height="53"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="Try Again" cornerStyle="large">
@@ -226,20 +226,20 @@
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="jea-Oz-aeT">
-                                <rect key="frame" x="40" y="368" width="334" height="160"/>
+                                <rect key="frame" x="40" y="364" width="334" height="168.5"/>
                                 <subviews>
                                     <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="bIK-dP-BLY">
-                                        <rect key="frame" x="10" y="20" width="314" height="120"/>
+                                        <rect key="frame" x="10" y="20" width="314" height="128.5"/>
                                         <subviews>
                                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Items shuffled" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" translatesAutoresizingMaskIntoConstraints="NO" id="4mf-Vj-Mdb">
-                                                <rect key="frame" x="0.0" y="0.0" width="314" height="41"/>
+                                                <rect key="frame" x="0.0" y="0.0" width="314" height="45.5"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <fontDescription key="fontDescription" name="Mali-Medium" family="Mali" pointSize="35"/>
                                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0NS-Tv-7qG">
-                                                <rect key="frame" x="0.0" y="71" width="314" height="49"/>
+                                                <rect key="frame" x="0.0" y="75.5" width="314" height="53"/>
                                                 <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                 <state key="normal" title="Button"/>
                                                 <buttonConfiguration key="configuration" style="filled" title="OK" cornerStyle="large">

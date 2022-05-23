@@ -232,16 +232,14 @@ class GameViewController: UIViewController {
     
     // MARK: - Check Connection
     func checkConnection(movement: Movement) {
-        var hasConnection = true
         disableItemInteraction()
         DispatchQueue.main.asyncAfter(deadline: .now() + dropItemAnimateDuration + clearItemAnimateDuration) {
-            hasConnection = self.checkAllConnection()
+            let hasConnection = self.checkBoardConnection()
             if hasConnection {
                 self.feedbackGenerator.selectionChanged()
                 self.bonusFactor += bonusFactorInterval
-                var newMovement = movement
-                newMovement.move = .none
-                self.checkConnection(movement: newMovement)
+                // check connection until there's no more item to delete
+                self.checkConnection(movement: Movement(move: .none, row: 0, column: 0))
             } else {
                 // if there's no connection, return the item to its original position
                 switch movement.move {
@@ -256,6 +254,7 @@ class GameViewController: UIViewController {
                     self.performSegue(withIdentifier: "showResult", sender: nil)
                 } else {
                     let hint = self.getHint()
+                    // if there's no item to change, shuffle items
                     if hint == [] {
                         self.bonusFactor = 1
                         self.updateItems()
@@ -268,7 +267,7 @@ class GameViewController: UIViewController {
         }
     }
     
-    func checkAllConnection() -> Bool {
+    func checkBoardConnection() -> Bool {
         var newScore: Int = 0
         var positionsToDelete: [[Int]] = []
         for row in 0..<numberOfRows {
@@ -307,16 +306,14 @@ class GameViewController: UIViewController {
     func getRowConnection(row: Int, column: Int) -> [[Int]] {
         let currentItem = boardItems[row][column]
         var positionsToDelete: [[Int]] = [[row, column]]
-        // check row
-        var toContinue = true
         var columnToCheck = column
-        while toContinue {
+        while true {
             columnToCheck += 1
             let itemNo = getItem(row: row, column: columnToCheck)
             if itemNo == currentItem.itemNo {
                 positionsToDelete += [[row, columnToCheck]]
             } else {
-                toContinue = false
+                break
             }
         }
         if positionsToDelete.count >= 3 {
@@ -329,16 +326,14 @@ class GameViewController: UIViewController {
     func getColumnConnection(row: Int, column: Int) -> [[Int]] {
         let currentItem = boardItems[row][column]
         var positionsToDelete: [[Int]] = [[row, column]]
-        // check column
-        var toContinue = true
         var rowToCheck = row
-        while toContinue {
+        while true {
             rowToCheck += 1
             let itemNo = getItem(row: rowToCheck, column: column)
             if itemNo == currentItem.itemNo {
                 positionsToDelete += [[rowToCheck, column]]
             } else {
-                toContinue = false
+                break
             }
         }
         if positionsToDelete.count >= 3 {
